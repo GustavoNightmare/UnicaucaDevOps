@@ -11,6 +11,7 @@ jobs:
     env:
       AWS_REGION: us-east-2
       STACK_NAME: gsandovalm-devops
+      BUCKET_NAME: frontend-static-gsandovalm-devops-us-east-2
 
     steps:
     - name: Checkout repo
@@ -21,7 +22,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEVOPS }}
-        aws-region: ${{ env.DEV_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Set up SAM CLI
       uses: aws-actions/setup-sam@v2
@@ -42,3 +43,7 @@ jobs:
           --capabilities CAPABILITY_IAM \
           --no-confirm-changeset \
           --no-fail-on-empty-changeset
+
+    - name: Upload frontend to S3
+      run: |
+        aws s3 sync Fronted/ s3://$BUCKET_NAME --delete
